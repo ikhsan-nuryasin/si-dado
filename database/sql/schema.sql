@@ -1,0 +1,62 @@
+CREATE DATABASE IF NOT EXISTS sidado CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE sidado;
+
+CREATE TABLE roles (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(50) NOT NULL UNIQUE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE users (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(100) NOT NULL,
+  email VARCHAR(100) NOT NULL UNIQUE,
+  password_hash VARCHAR(255) NOT NULL,
+  role_id INT NOT NULL DEFAULT 1,
+  is_active TINYINT(1) DEFAULT 1,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_users_role FOREIGN KEY (role_id) REFERENCES roles(id)
+);
+
+CREATE TABLE facilities (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(150) NOT NULL,
+  facility_type VARCHAR(100) NOT NULL,
+  address TEXT,
+  province VARCHAR(100),
+  city VARCHAR(100),
+  district VARCHAR(100),
+  postal_code VARCHAR(20),
+  latitude VARCHAR(50),
+  longitude VARCHAR(50),
+  phone VARCHAR(50),
+  email VARCHAR(100),
+  website VARCHAR(255),
+  operating_hours VARCHAR(100),
+  is_active TINYINT(1) DEFAULT 1,
+  is_pmi_partner TINYINT(1) DEFAULT 1,
+  logo_path VARCHAR(255),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE blood_stocks (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  facility_id INT NOT NULL,
+  blood_group VARCHAR(10) NOT NULL,
+  rhesus VARCHAR(10) NOT NULL,
+  component VARCHAR(50) NOT NULL,
+  quantity INT NOT NULL DEFAULT 0,
+  expiry_date DATE,
+  status VARCHAR(50) NOT NULL DEFAULT 'Tersedia',
+  source VARCHAR(50) NOT NULL DEFAULT 'Manual',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_blood_stocks_facility FOREIGN KEY (facility_id) REFERENCES facilities(id)
+);
+
+CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_facilities_city ON facilities(city);
+CREATE INDEX idx_stocks_status ON blood_stocks(status);
